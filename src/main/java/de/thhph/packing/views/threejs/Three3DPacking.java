@@ -11,12 +11,19 @@ import com.vaadin.flow.component.dependency.NpmPackage;
 @Tag("canvas")
 public class Three3DPacking extends Component {
 	
+	int count = 0;
+	
 	public Three3DPacking() {
-        getElement().executeJs("window.initThree($0)", this);
+        getElement().executeJs("window.initThreePacking($0, $1, $2, $3)", this, 1.0, 0.6, 0.8);
     }
 	
 	public void addBox() {
-		getElement().executeJs("window.tt.addMesh()");
+		if (count > 5) {
+			getElement().executeJs("window.threePacking.highlightItem( " + (count % 5) + ")");
+		} else {
+			getElement().executeJs("window.threePacking.addItem( 0." + count + ", 0.0, 0.0, 0.1, 0.1, 0.1)");
+		}
+		count++;
 	}
 
 }
