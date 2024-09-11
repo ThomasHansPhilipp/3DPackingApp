@@ -22,55 +22,55 @@ import de.thhph.packing.views.helloworld.HelloWorldView;
 @SuppressWarnings("serial")
 public class MainLayout extends AppLayout {
 
-    private H1 viewTitle;
+	private H1 viewTitle;
 
-    public MainLayout() {
-        setPrimarySection(Section.DRAWER);
-        addDrawerContent();
-        addHeaderContent();
-    }
+	public MainLayout() {
+		setPrimarySection(Section.DRAWER);
+		addDrawerContent();
+		addHeaderContent();
+	}
 
-    private void addHeaderContent() {
-        DrawerToggle toggle = new DrawerToggle();
-        toggle.setAriaLabel("Menu toggle");
+	private void addHeaderContent() {
+		DrawerToggle toggle = new DrawerToggle();
+		toggle.setAriaLabel("Menu toggle");
 
-        viewTitle = new H1();
-        viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
+		viewTitle = new H1();
+		viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
 
-        addToNavbar(true, toggle, viewTitle);
-    }
+		addToNavbar(true, toggle, viewTitle);
+	}
 
-    private void addDrawerContent() {
-        Span appName = new Span("3D-Packing");
-        appName.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.FontSize.LARGE);
-        Header header = new Header(appName);
+	private void addDrawerContent() {
+		Span appName = new Span("3D-Packing");
+		appName.addClassNames(LumoUtility.FontWeight.SEMIBOLD, LumoUtility.FontSize.LARGE);
+		Header header = new Header(appName);
 
-        Scroller scroller = new Scroller(createNavigation());
+		Scroller scroller = new Scroller(createNavigation());
 
-        addToDrawer(header, scroller, createFooter());
-    }
+		addToDrawer(header, scroller, createFooter());
+	}
 
-    private SideNav createNavigation() {
-        SideNav nav = new SideNav();
-        nav.addItem(new SideNavItem("Hello World", HelloWorldView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
-        
-        return nav;
-    }
+	private SideNav createNavigation() {
+		SideNav nav = new SideNav();
+		nav.addItem(new SideNavItem("Hello World", HelloWorldView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
 
-    private Footer createFooter() {
-        Footer layout = new Footer();
+		return nav;
+	}
 
-        return layout;
-    }
+	private Footer createFooter() {
+		Footer layout = new Footer();
 
-    @Override
-    protected void afterNavigation() {
-        super.afterNavigation();
-        viewTitle.setText(getCurrentPageTitle());
-    }
+		return layout;
+	}
 
-    private String getCurrentPageTitle() {
-        PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
-        return title == null ? "" : title.value();
-    }
+	@Override
+	protected void afterNavigation() {
+		super.afterNavigation();
+		viewTitle.setText(getCurrentPageTitle());
+	}
+
+	private String getCurrentPageTitle() {
+		PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
+		return title == null ? "" : title.value();
+	}
 }

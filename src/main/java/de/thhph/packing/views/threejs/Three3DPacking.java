@@ -10,20 +10,22 @@ import com.vaadin.flow.component.dependency.NpmPackage;
 @NpmPackage(value = "three", version = "0.168.0")
 @Tag("canvas")
 public class Three3DPacking extends Component {
-	
-	int count = 0;
-	
+
 	public Three3DPacking() {
-        getElement().executeJs("window.initThreePacking($0, $1, $2, $3)", this, 1.0, 0.6, 0.8);
-    }
-	
-	public void addBox() {
-		if (count > 5) {
-			getElement().executeJs("window.threePacking.highlightItem( " + (count % 5) + ")");
-		} else {
-			getElement().executeJs("window.threePacking.addItem( 0." + count + ", 0.0, 0.0, 0.1, 0.1, 0.1)");
-		}
-		count++;
+		super();
+	}
+
+	public void init(int roomX, int roomY, int roomZ) {
+		getElement().executeJs("window.initThreePacking($0, $1, $2, $3)", this, roomX, roomY, roomZ);
+	}
+
+	public void addItem(int x, int y, int z, int xExt, int yExt, int zExt) {
+		getElement().executeJs("window.threePacking.addItem($0, $1, $2, $3, $4, $5 )", (double) x, (double) y,
+				(double) z, (double) xExt, (double) yExt, (double) zExt);
+	}
+
+	public void highlightItem(int index) {
+		getElement().executeJs("window.threePacking.highlightItem($0)", index);
 	}
 
 }
