@@ -14,7 +14,8 @@ import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
-import de.thhph.packing.views.helloworld.HelloWorldView;
+import de.thhph.packing.views.result.PackingResultView;
+import de.thhph.packing.views.task.PackingTaskView;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -52,7 +53,8 @@ public class MainLayout extends AppLayout {
 
 	private SideNav createNavigation() {
 		SideNav nav = new SideNav();
-		nav.addItem(new SideNavItem("Hello World", HelloWorldView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
+		nav.addItem(new SideNavItem("Result", PackingResultView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
+		nav.addItem(new SideNavItem("Define task", PackingTaskView.class, LineAwesomeIcon.GLOBE_SOLID.create()));
 
 		return nav;
 	}

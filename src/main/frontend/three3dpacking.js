@@ -18,7 +18,7 @@ class ThreePacking {
 
 		this.initRoom();
 
-		this.scene.add(new THREE.AxesHelper(2));
+		//this.scene.add(new THREE.AxesHelper(2));
 
 		this.initRendererAndControls();
 
@@ -28,9 +28,11 @@ class ThreePacking {
 	
 	
 	addItem(x, y, z, xExt, yExt, zExt) {
-		var geometry = new THREE.BoxGeometry(xExt, yExt, zExt, 2, 2, 2);
+		var geometry = new THREE.BoxGeometry(xExt, yExt, zExt);
 		var mesh = new THREE.Mesh(geometry, this.materialBasic);
-		var wireFrameMesh = new THREE.Mesh(geometry, this.materialWireframe);
+		
+		var wireFrameMesh = new THREE.BoxHelper(mesh, 0x010b0d);
+		
 		var group = new THREE.Group()
 		group.add(mesh);
 		group.add(wireFrameMesh);
@@ -64,20 +66,22 @@ class ThreePacking {
 			70,
 			this.element.width / this.element.height,
 			0.0001,
-			10000
+			(this.roomX + this.roomY + this.roomZ) * 10
 		);
 		this.camera.position.x = 0.0;
 		this.camera.position.y = - (this.roomY / 2.0) * 3;
-		this.camera.position.z = (this.roomZ / 2.0) * 1.2;
+		this.camera.position.z = (this.roomZ / 2.0) * 1.5;
 		this.camera.lookAt(0.0, 0.0, 0.0);
 	}
 
 	initLight() {
 		// a light is required for MeshPhongMaterial to be seen
 		this.directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-		this.directionalLight.position.z = this.roomZ * 3;
+		this.directionalLight.position.z = (this.roomX + this.roomY + this.roomZ);
+		this.directionalLight.position.x = -(this.roomX + this.roomY + this.roomZ);
+		this.directionalLight.position.y = -(this.roomX + this.roomY + this.roomZ);
 		this.directionalLight.lookAt(0, 0, 0);
-		this.ambientLight = new THREE.AmbientLight(0x707070); // soft white light
+		this.ambientLight = new THREE.AmbientLight(0x909090); // soft white light
 	}
 
 	initRoom() {
@@ -92,6 +96,7 @@ class ThreePacking {
 		this.scene = new THREE.Scene();
 		this.scene.add(this.directionalLight);
 		this.scene.add(this.ambientLight);
+		this.scene.background = new THREE.Color(0xfaf9f0);
 	}
 
 	initRendererAndControls() {
@@ -107,24 +112,35 @@ class ThreePacking {
 	}
 
 	initMaterials() {
-		this.materialBasic = new THREE.MeshLambertMaterial({color: 0x00ff00});
+		this.materialBasic = new THREE.MeshLambertMaterial({color: 0x1af50f});
 
-		this.materialHighlighted = new THREE.MeshLambertMaterial({color: 0x00ff00});
-		this.materialHighlighted.emissive.setHex(0x0000ff);
+		this.materialHighlighted = new THREE.MeshLambertMaterial({color: 0x7967eb});
+		this.materialHighlighted.emissive.setHex(0x19bbd4);
+		this.materialHighlighted.emissiveIntensity = 0.5;
 
-		this.materialWireframe = new THREE.MeshPhongMaterial({ color: 0xffffff, wireframe: true });
+		this.materialWireframe = new THREE.MeshPhongMaterial({ color: 0x010b0d, wireframe: true });
 
-		this.materialRoom = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 1 })
+		this.materialRoom = new THREE.LineBasicMaterial({ color: 0x010b0d, linewidth: 2 });
 	}
 
 	animate() {
 		this.controls.update();
 		this.renderer.render(this.scene, this.camera);
 	}
+	
+	dispose() {
+		this.renderer.setAnimationLoop(null);
+		this.renderer.dispose();
+		//TODO dispose all other objects
+	}
 
 }
 
 window.initThreePacking = function(element, roomx, roomy, roomz) {
+	if (window.threePacking) {
+		window.threePacking.dispose();
+		window.threePacking = null;
+	}
 	// Called from Java with the DOM element for the Three component instance
 	var newHeight = element.offsetHeight;
 	var newWidth = element.offsetWidth;
