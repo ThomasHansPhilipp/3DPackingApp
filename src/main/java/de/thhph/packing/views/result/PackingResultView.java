@@ -10,6 +10,8 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
@@ -28,7 +30,7 @@ import de.thhph.packing3d.Rotation3D;
 @SuppressWarnings("serial")
 @PageTitle("Packing results")
 @Route(value = "result", layout = MainLayout.class)
-public class PackingResultView extends HorizontalLayout {
+public class PackingResultView extends HorizontalLayout implements BeforeLeaveObserver {
 
 	private Button next;
 	private Button previous;
@@ -287,7 +289,7 @@ public class PackingResultView extends HorizontalLayout {
 		}
 
 		addTaskFromOtherThread(ui, () -> {
-			// TODO Optimize to not always initialize call initializeThree for each item
+			// TODO Optimize to not always initialize call initializeThree for each item?
 			this.packingResult = newResult;
 			List<RoomPackingList3DDto> packedRooms = newResult.packedRooms;
 			initializeThree(packedRooms.size() - 1,
@@ -306,6 +308,11 @@ public class PackingResultView extends HorizontalLayout {
 		previousRoom.setEnabled(enabled);
 		first.setEnabled(enabled);
 		last.setEnabled(enabled);
+	}
+
+	@Override
+	public void beforeLeave(BeforeLeaveEvent event) {
+		this.three.dispose();
 	}
 
 }

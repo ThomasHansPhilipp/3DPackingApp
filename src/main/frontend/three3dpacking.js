@@ -10,6 +10,7 @@ class ThreePacking {
 		this.roomZ = roomZ
 		this.element = element;
 		this.items = [];
+		this.elementsToDispose = [];
 
 		this.initMaterials();
 		this.initCamera();
@@ -29,9 +30,11 @@ class ThreePacking {
 	
 	addItem(x, y, z, xExt, yExt, zExt) {
 		var geometry = new THREE.BoxGeometry(xExt, yExt, zExt);
+		this.elementsToDispose.push(geometry);
 		var mesh = new THREE.Mesh(geometry, this.materialBasic);
 		
 		var wireFrameMesh = new THREE.BoxHelper(mesh, 0x010b0d);
+		this.elementsToDispose.push(wireFrameMesh);
 		
 		var group = new THREE.Group()
 		group.add(mesh);
@@ -42,7 +45,6 @@ class ThreePacking {
 		group.translateZ(this.roomOriginZ + (zExt / 2) + z);
 		//Un-highlight last item, then add new item (highlighted)
 		this.items.push(group);
-		console.log("added: " + this.items.length);
 	}
 	
 	highlightItem(index) {
@@ -81,15 +83,21 @@ class ThreePacking {
 		this.directionalLight.position.x = -(this.roomX + this.roomY + this.roomZ);
 		this.directionalLight.position.y = -(this.roomX + this.roomY + this.roomZ);
 		this.directionalLight.lookAt(0, 0, 0);
+		this.elementsToDispose.push(this.directionalLight);
 		this.ambientLight = new THREE.AmbientLight(0x909090); // soft white light
+		this.elementsToDispose.push(this.ambientLight);
 	}
 
 	initRoom() {
-		this.roomSegments = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(this.roomX, this.roomY, this.roomZ)), this.materialRoom);
+		var geo1 = new THREE.BoxGeometry(this.roomX, this.roomY, this.roomZ);
+		var geo2 = new THREE.EdgesGeometry(geo1);
+		this.roomSegments = new THREE.LineSegments(geo2, this.materialRoom);
 		this.roomOriginX = - (this.roomX / 2);
 		this.roomOriginY =   (this.roomY / 2);
 		this.roomOriginZ = - (this.roomZ / 2);
 		this.scene.add(this.roomSegments);
+		this.elementsToDispose.push(geo1);
+		this.elementsToDispose.push(geo2);
 	}
 
 	initScene() {
@@ -113,14 +121,15 @@ class ThreePacking {
 
 	initMaterials() {
 		this.materialBasic = new THREE.MeshLambertMaterial({color: 0x1af50f});
+		this.elementsToDispose.push(this.materialBasic);
 
 		this.materialHighlighted = new THREE.MeshLambertMaterial({color: 0x7967eb});
 		this.materialHighlighted.emissive.setHex(0x19bbd4);
 		this.materialHighlighted.emissiveIntensity = 0.5;
-
-		this.materialWireframe = new THREE.MeshPhongMaterial({ color: 0x010b0d, wireframe: true });
+		this.elementsToDispose.push(this.materialHighlighted);
 
 		this.materialRoom = new THREE.LineBasicMaterial({ color: 0x010b0d, linewidth: 2 });
+		this.elementsToDispose.push(this.materialRoom);
 	}
 
 	animate() {
@@ -131,10 +140,19 @@ class ThreePacking {
 	dispose() {
 		this.renderer.setAnimationLoop(null);
 		this.renderer.dispose();
-		//TODO dispose all other objects
+		for (var i = 0; i < this.elementsToDispose.length; i++) {
+			this.elementsToDispose[i].dispose();
+		}
 	}
 
-}
+};
+
+window.detachThreePacking = function() {
+	if (window.threePacking) {
+		window.threePacking.dispose();
+		window.threePacking = null;
+	}
+};
 
 window.initThreePacking = function(element, roomx, roomy, roomz) {
 	if (window.threePacking) {

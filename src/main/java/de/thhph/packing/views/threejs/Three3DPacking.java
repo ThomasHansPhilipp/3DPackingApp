@@ -15,6 +15,10 @@ public class Three3DPacking extends Component {
 		super();
 	}
 
+	public void dispose() {
+		getElement().executeJs("window.detachThree()");
+	}
+
 	public void init(int roomX, int roomY, int roomZ) {
 		getElement().executeJs("window.initThreePacking($0, $1, $2, $3)", this, roomX, roomY, roomZ);
 	}
