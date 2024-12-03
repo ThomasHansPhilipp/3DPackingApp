@@ -16,6 +16,9 @@ import de.thhph.api3d.dto.mapper.Packing3DFromDtoMapper;
 import de.thhph.api3d.dto.mapper.Packing3DToDtoMapper;
 import de.thhph.api3d.dto.result.Packing3DResultDto;
 import de.thhph.api3d.dto.task.Packing3DTaskDto;
+import de.thhph.api3d.dto.task.item.Item3DDto;
+import de.thhph.api3d.dto.task.item.ItemType3DDto;
+import de.thhph.api3d.dto.task.parameter.ExpandStrategyAll3DDto;
 import de.thhph.api3d.dto.task.parameter.ExpandStrategyHeuristic3DDto;
 import de.thhph.api3d.dto.task.parameter.PlayoutStrategyRandom3DDto;
 import de.thhph.api3d.dto.task.parameter.TimingStrategy3DDto;
@@ -45,6 +48,11 @@ public class PackingTaskView extends VerticalLayout {
 			taskJson.setValue(getSampleTask1());
 		});
 
+		Button createSampleTask2 = new Button("Create sample task 2");
+		createSampleTask2.addClickListener(e -> {
+			taskJson.setValue(getSampleTask2());
+		});
+
 		Button startTask = new Button("Start task");
 		startTask.addClickListener(e -> {
 			startTask();
@@ -54,7 +62,7 @@ public class PackingTaskView extends VerticalLayout {
 		taskJson.setMinHeight("100px");
 		taskJson.setWidthFull();
 
-		add(new HorizontalLayout(createSampleTask1, startTask), taskJson);
+		add(new HorizontalLayout(createSampleTask1, createSampleTask2, startTask), taskJson);
 
 	}
 
@@ -122,6 +130,40 @@ public class PackingTaskView extends VerticalLayout {
 		parameters.playoutStrategy = new PlayoutStrategyRandom3DDto(1);
 		parameters.timingStrategy = new TimingStrategy3DDto(100000, 10000);
 
+		return serialize(task);
+	}
+
+	private String getSampleTask2() {
+		Packing3DTaskDto task = new Packing3DTaskDto();
+
+		RoomReservoir3DDto reservoir = new RoomReservoir3DDto();
+		reservoir.roomMode = RoomMode.UNPRIORITIZED;
+		Room3DDto room1 = new Room3DDto();
+		room1.id = "R1";
+		room1.roomType = new RoomType3DDto();
+		room1.roomType.cost = 10.0;
+		room1.roomType.volume = new Vector3DDto(10, 10, 1);
+		reservoir.rooms.add(room1);
+		task.reservoirs.add(reservoir);
+
+		task.items.add(new Item3DDto("1", new ItemType3DDto(new Vector3DDto(8, 2, 1))));
+		task.items.add(new Item3DDto("2", new ItemType3DDto(new Vector3DDto(8, 2, 1))));
+		task.items.add(new Item3DDto("3", new ItemType3DDto(new Vector3DDto(8, 2, 1))));
+		task.items.add(new Item3DDto("4", new ItemType3DDto(new Vector3DDto(8, 2, 1))));
+		task.items.add(new Item3DDto("4", new ItemType3DDto(new Vector3DDto(6, 6, 1))));
+
+		UCTParameters3DDto parameters = new UCTParameters3DDto();
+		task.parameters = parameters;
+		parameters.expandStrategy = new ExpandStrategyAll3DDto();
+		parameters.maxNodeCount = 1000000;
+		parameters.numberOfThreads = 1;
+		parameters.playoutStrategy = new PlayoutStrategyRandom3DDto(1);
+		parameters.timingStrategy = new TimingStrategy3DDto(5000, 1000000);
+
+		return serialize(task);
+	}
+
+	private String serialize(Packing3DTaskDto task) {
 		ObjectMapper mapper = getJacksonMapper();
 		try {
 			return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(task);

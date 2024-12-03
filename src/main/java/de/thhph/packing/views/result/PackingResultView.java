@@ -125,7 +125,7 @@ public class PackingResultView extends HorizontalLayout implements BeforeLeaveOb
 		// the canvas which contains three has its dimensions already set correctly.
 		new Thread(() -> {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(400);
 			} catch (InterruptedException e) {
 				// ignore
 			}
@@ -236,7 +236,7 @@ public class PackingResultView extends HorizontalLayout implements BeforeLeaveOb
 		if (currentItemIndex < 0) {
 			return null;
 		}
-		if (currentItemIndex < 0) {
+		if (currentItemIndex >= currentRoom().packedItems.size()) {
 			return null;
 		}
 		return currentRoom().packedItems.get(currentItemIndex);
