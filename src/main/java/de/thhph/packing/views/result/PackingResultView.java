@@ -264,7 +264,7 @@ public class PackingResultView extends HorizontalLayout implements BeforeLeaveOb
 		result.item = new Item3DDto();
 		result.item.id = "" + i;
 		result.item.itemType = new ItemType3DDto();
-		result.item.itemType.cost = (double) (i * i * i);
+		result.item.itemType.reward = (double) (i * i * i);
 		result.item.itemType.volume = new Vector3DDto(i, i, i);
 		return result;
 	}

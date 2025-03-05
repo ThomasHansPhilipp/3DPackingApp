@@ -111,7 +111,7 @@ public class SampleRoomSplitter {
 		result.itemType.allowStackingAB = allowStacking;
 		result.itemType.allowStackingAC = allowStacking;
 		result.itemType.allowStackingBC = allowStacking;
-		result.itemType.cost = (double) (split.x * split.y * split.z);
+		result.itemType.reward = (double) (split.x * split.y * split.z);
 		result.itemType.volume = split;
 		return result;
 	}
