@@ -1,5 +1,7 @@
 package de.thhph.packing.views.task;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,8 +31,13 @@ import de.thhph.api3d.dto.task.room.RoomReservoir3DDto;
 import de.thhph.api3d.dto.task.room.RoomType3DDto;
 import de.thhph.packing.views.MainLayout;
 import de.thhph.packing.views.result.PackingResultView;
+import de.thhph.packing3d.Item3D;
 import de.thhph.packing3d.OptimizerBuilderPacking3D;
 import de.thhph.packing3d.PackingGame3D;
+import de.thhph.packing3d.Room3D;
+import de.thhph.packing3d.RoomType3D;
+import de.thhph.packing3d.Vector3D;
+import de.thhph.packingxd.IRoomReservoirXD;
 
 @SuppressWarnings("serial")
 @Route(value = "", layout = MainLayout.class)
@@ -73,7 +80,10 @@ public class PackingTaskView extends VerticalLayout {
 		try {
 			Packing3DTaskDto taskObject = mapper.readValue(json, Packing3DTaskDto.class);
 			OptimizerBuilderPacking3D optimizerBuilderPacking3D = new Packing3DFromDtoMapper()
-					.mapPacking3DTask(taskObject);
+					.mapPacking3DTask(taskObject.parameters);
+			List<Item3D> items = new Packing3DFromDtoMapper().mapItems(taskObject.items);
+			IRoomReservoirXD<Vector3D, RoomType3D, Room3D> reservoir =
+					new Packing3DFromDtoMapper().mapReservoirs(taskObject.reservoirs);
 			UI ui = UI.getCurrent();
 			ui.navigate(PackingResultView.class).ifPresent(newView -> {
 				newView.setPackingResultIncrementalFromOtherThread(ui, new Packing3DResultDto());
@@ -84,7 +94,7 @@ public class PackingTaskView extends VerticalLayout {
 					return true;
 				});
 			});
-			new Thread(() -> optimizerBuilderPacking3D.optimize()).start();
+			new Thread(() -> optimizerBuilderPacking3D.build(reservoir, items).optimizeGame()).start();
 		} catch (Exception e) {
 			Notification.show("Error in task: " + e.getMessage());
 		}
